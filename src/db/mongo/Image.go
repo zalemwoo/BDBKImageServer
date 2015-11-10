@@ -26,6 +26,27 @@ func (self *Mongo) ImageFaceChecked(checked bool) *mgo.Iter {
 	return self.getCollection(IMAGE_INFO_COLLECTION_NAME).Find(bson.M{"face_checked": checked}).Iter()
 }
 
+func (self *Mongo) ImageFaceCheckedCount(checked bool) (count int) {
+	count, err := self.getCollection(IMAGE_INFO_COLLECTION_NAME).Find(bson.M{"face_checked": checked}).Count()
+
+	if err != nil {
+		count = -1
+	}
+	return
+}
+
+func (self *Mongo) ImageFaceUncheckedOrNil() *mgo.Iter {
+	return self.getCollection(IMAGE_INFO_COLLECTION_NAME).Find(bson.M{"face_checked": bson.M{"$in": []interface{}{false, nil}}}).Iter()
+}
+
+func (self *Mongo) ImageFaceUncheckedOrNilCount() (count int) {
+	count, err := self.getCollection(IMAGE_INFO_COLLECTION_NAME).Find(bson.M{"face_checked": bson.M{"$in": []interface{}{false, nil}}}).Count()
+	if err != nil {
+		count = -1
+	}
+	return
+}
+
 func (self *Mongo) ImageByName(name string) *mgo.Iter {
 	return self.getCollection(IMAGE_INFO_COLLECTION_NAME).Find(bson.M{"file_name": name}).Iter()
 }

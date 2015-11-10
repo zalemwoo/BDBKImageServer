@@ -81,7 +81,7 @@ func main() {
 	defer shutdown()
 
 	mongo.Session.SetCursorTimeout(0)
-	mongo.Session.SetBatch(10000)
+	mongo.Session.SetBatch(1000)
 
 	taskPool = new(common.TaskPool)
 	taskPool.Init(&common.TaskPoolConfig{
@@ -93,7 +93,10 @@ func main() {
 	defer taskPool.Stop()
 
 	image := model.ImageInfo{}
-	iter := mongo.ImageFaceChecked(false)
+	nUnchecked := mongo.ImageFaceUncheckedOrNilCount()
+	log.Printf("Unchecked images count is: %d.", nUnchecked)
+	iter := mongo.ImageFaceUncheckedOrNil()
+	defer iter.Close()
 	for iter.Next(&image) {
 		img := image
 		taskPool.AddTask(func(p pool.Pool) error {
@@ -101,7 +104,6 @@ func main() {
 			return nil
 		})
 	}
-	iter.Close()
 }
 
 func procImage(image *model.ImageInfo, mongo *m.Mongo, p pool.Pool) {
