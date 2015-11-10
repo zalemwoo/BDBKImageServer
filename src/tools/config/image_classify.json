@@ -1,0 +1,9 @@
+{
+  "MongoDBServer": {
+    "Host": "192.168.1.173",
+    "Port": "8484",
+    "Database": "bdbk"
+  },
+  "ImageFilePath": "/Volumes/DATA/BDBKCrawler/bdbk/data/images"
+  "ImageFilePath": "/Volumes/DATA/BDBKCrawler/bdbk/data/tmp"
+}

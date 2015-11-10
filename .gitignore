@@ -1,0 +1,6 @@
+**/*~
+**/*.log
+bin
+pkg
+
+**/.DS_Store
