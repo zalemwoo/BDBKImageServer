@@ -44,7 +44,7 @@ func (self *TaskPool) Init(config *TaskPoolConfig) {
 		url := v.Url
 		pool, err := pool.NewChannelPool(1, self.connPerPool,
 			func() (net.Conn, error) {
-				return net.DialTimeout("tcp", url, 1*time.Second)
+				return net.DialTimeout("tcp", url, 20*time.Second)
 			})
 
 		if err != nil {

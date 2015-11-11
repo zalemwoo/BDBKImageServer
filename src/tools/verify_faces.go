@@ -105,7 +105,6 @@ func main() {
 			return nil
 		})
 	}
-	_ = "breakpoint"
 }
 
 func procImage(image *model.ImageInfo, mongo *m.Mongo, p pool.Pool) {
@@ -169,9 +168,5 @@ func procImage(image *model.ImageInfo, mongo *m.Mongo, p pool.Pool) {
 	}(mongo, image)
 
 	processed++
-	if image.Has_face == true {
-		log.Printf("%d: FOUND FACE: %s", processed, filePath)
-	} else {
-		log.Printf("%d: NO FACE: %s", processed, filePath)
-	}
+	log.Printf("[%d]: FOUND FACE?[%v]: %s", image.Has_face, processed, filePath)
 }
