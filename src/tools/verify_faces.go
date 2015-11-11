@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"path/filepath"
+	"time"
 
 	"gopkg.in/fatih/pool.v2"
 
@@ -104,6 +105,7 @@ func main() {
 			return nil
 		})
 	}
+	_ = "breakpoint"
 }
 
 func procImage(image *model.ImageInfo, mongo *m.Mongo, p pool.Pool) {
@@ -124,6 +126,7 @@ func procImage(image *model.ImageInfo, mongo *m.Mongo, p pool.Pool) {
 	messageLen := len(message)
 	totalWrite := 0
 	for {
+		tcpConn.SetWriteDeadline(time.Now().Add(60 * time.Second))
 		n, err := tcpConn.Write(message[totalWrite:])
 		if err != nil {
 			log.Printf("Write message error. err: %v", err)
@@ -141,6 +144,7 @@ func procImage(image *model.ImageInfo, mongo *m.Mongo, p pool.Pool) {
 	messageBody := ""
 	isComplete := false
 	for {
+		tcpConn.SetReadDeadline(time.Now().Add(60 * time.Second))
 		n, err := tcpConn.Read(b)
 		if err != nil {
 			if err != io.EOF {
