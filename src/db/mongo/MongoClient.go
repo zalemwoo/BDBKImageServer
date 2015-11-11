@@ -7,8 +7,6 @@ import (
 	mgo "gopkg.in/mgo.v2"
 )
 
-const timeout = 4
-
 type MongoConfig struct {
 	Host     string
 	Port     string

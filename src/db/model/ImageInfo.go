@@ -7,7 +7,7 @@ type ImageInfo struct {
 	Src          string        `json:"src"`
 	Has_face     bool          `json:"has_face"`
 	Face_info    string        `json:"face_info"`
-	Face_checked bool          `json:"Face_checkeded"`
+	Face_checked bool          `json:"face_checked"`
 	Url          string        `json:"url"`
 	Is_cover     bool          `json:"is_cover"`
 	Album_url    string        `json:"album_url"`

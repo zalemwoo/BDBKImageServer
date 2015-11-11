@@ -34,7 +34,7 @@ func main() {
 		},
 		cli.StringFlag{
 			Name:  "out, o",
-			Value: "",
+			Value: "out",
 			Usage: "path of output file.",
 		},
 	}
@@ -43,10 +43,6 @@ func main() {
 		pathArg := c.String("path")
 		rectArg := c.String("rect")
 		outArg := c.String("out")
-
-		if len(outArg) == 0 {
-			outArg = "out"
-		}
 
 		if len(pathArg) == 0 || len(rectArg) == 0 {
 			println("path and rect are required.")
