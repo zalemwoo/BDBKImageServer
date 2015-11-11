@@ -53,16 +53,22 @@ func BuildMessage(filePath string) []byte {
 
 func ParseResult(message []byte) (totalLen int32, body string, isComplete bool) {
 	messageLen := int32(len(message))
-	dataLenPart := message[12:16]
-	b_buf := bytes.NewBuffer(dataLenPart)
+	cmdLenPart := message[3:5]
+	b_buf := bytes.NewBuffer(cmdLenPart)
+	var cmdLen int16
+	binary.Read(b_buf, binary.BigEndian, &cmdLen)
+	cmdLen32 := int32(cmdLen)
+
+	dataLenPart := message[5+cmdLen32 : 5+cmdLen32+4]
+	b_buf = bytes.NewBuffer(dataLenPart)
 	var resultLen int32
 	binary.Read(b_buf, binary.BigEndian, &resultLen)
-	totalLen = 2 + 1 + 2 + 7 + 4 + resultLen + 2
+	totalLen = 2 + 1 + 2 + cmdLen32 + 4 + resultLen + 2
 	if messageLen >= totalLen {
-		if resultLen == 0 {
+		if resultLen == 0 || int(cmdLen32) != len("RESULT\x00") {
 			return totalLen, "", true
 		} else {
-			return totalLen, string(message[16 : 16+resultLen-1]), true
+			return totalLen, string(message[5+cmdLen32+4 : 5+cmdLen32+4+resultLen-1]), true
 		}
 	}
 	return totalLen, "", false

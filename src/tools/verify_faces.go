@@ -9,6 +9,8 @@ import (
 	"io"
 	"log"
 	"path/filepath"
+	"runtime"
+	"sync"
 	"time"
 
 	"gopkg.in/fatih/pool.v2"
@@ -33,6 +35,7 @@ type ServerConfig struct {
 var config ServerConfig
 var mongo *m.Mongo
 
+var wg sync.WaitGroup
 var taskPool *common.TaskPool
 
 var processed = 0
@@ -64,6 +67,8 @@ func shutdown() {
 
 func main() {
 
+	runtime.GOMAXPROCS(runtime.NumCPU() * 2)
+
 	config_json, _ := json.Marshal(config)
 	log.Printf("Server config: %s \n", config_json)
 
@@ -94,17 +99,20 @@ func main() {
 	defer taskPool.Stop()
 
 	image := model.ImageInfo{}
-	nUnchecked := mongo.ImageFaceUncheckedOrNilCount()
-	log.Printf("Unchecked images count is: %d.", nUnchecked)
+	nNeedProcess := mongo.ImageFaceUncheckedOrNilCount()
+	log.Printf("Unchecked images count is: %d.", nNeedProcess)
+	wg.Add(nNeedProcess)
 	iter := mongo.ImageFaceUncheckedOrNil()
 	defer iter.Close()
 	for iter.Next(&image) {
 		img := image
 		taskPool.AddTask(func(p pool.Pool) error {
+			defer wg.Done()
 			procImage(&img, mongo, p)
 			return nil
 		})
 	}
+	wg.Wait()
 }
 
 func procImage(image *model.ImageInfo, mongo *m.Mongo, p pool.Pool) {
